@@ -1,0 +1,1 @@
+Collects text translations of things that you say when invoking Night Phase, and stores them on Firebase servers for 14 days before being deleted.
