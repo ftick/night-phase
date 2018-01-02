@@ -145,17 +145,11 @@ function processV1Request (request, response) {
 }
 
 function processV2Request (request, response) {
-  // An action is a string used to identify what needs to be done in fulfillment
   let action = (request.body.queryResult.action) ? request.body.queryResult.action : 'default';
-  // Parameters are any entites that Dialogflow has extracted from the request.
   let parameters = request.body.queryResult.parameters || {}; // https://dialogflow.com/docs/actions-and-parameters
-  // Contexts are objects used to track and store conversation state
   let inputContexts = request.body.queryResult.outputContexts; // https://dialogflow.com/docs/contexts
-  // Get the request source (Google Assistant, Slack, API, etc)
   let requestSource = (request.body.originalDetectIntentRequest) ? request.body.originalDetectIntentRequest.source : undefined;
-  // Get the session ID to differentiate calls from different users
   let session = (request.body.session) ? request.body.session : undefined;
-  // Create handlers for Dialogflow actions as well as a 'default' handler
   const googleAssistantRequest = 'google'; // Constant to identify Google Assistant requests
   const app = new DialogflowApp({request: request, response: response});
   const actionHandlers = {
@@ -166,36 +160,53 @@ function processV2Request (request, response) {
     },
     // Begin narration of the game
     'game.narrate': () => {
-      console.log('inputContexts: ', JSON.stringify(inputContexts));
       // Get game info
       let game_params = inputContexts[0].parameters;
       let game = game_params.game;
       let players = game_params.players;
       let joker = game_params.joker !== '';
       let roles = game_params['avalon-set'];
-      let speak = '<speak>Eyes closed and fists on the table then! ';
+      let isGoogle = requestSource === googleAssistantRequest;
+      let speak = (isGoogle) ? '<speak>' : '';
+
+      function addBreak(length, strength){
+        if(isGoogle) {
+          speak += '<break ';
+          if(length > 0) speak += 'time="' + length + 'ms" ';
+          if(strength !== '') speak += 'strength="' + strength + '" ';
+          speak += '/>';
+        }
+      }
+      function addPhrase(phrase) {
+        if(isGoogle) speak += '<prosody volume="loud">' + phrase + '</prosody>'
+        else speak += phrase + ' '
+      }
+      function addPhrase(phrase, length, strength){
+        addPhase(phrase)
+        if(isGoogle) addBreak(length, strength);
+      }
+
+      addPhrase('Eyes closed and fists on the table!', 200, 'x-weak')
       
       if(game == 'The Resistance: Avalon') {
-        
-        speak += 'Narrating Avalon';
+        //speak += 'Narrating Avalon for ' + players + ' players.';
         
       } else if (game == 'The Resistance') {
-        
-        speak += 'Narrating The Resistance';
+        //speak += 'Narrating The Resistance for ' + players + ' players.';
         
       } else if (game == 'Secret Hitler') {
-        
-        speak += 'Narrating Secret Hitler';
-        
+        //speak += 'Narrating Secret Hitler for ' + players + ' players.';
+        if(players > 6) {
+          if(isGoogle) speak += ''
+        } else {
+
+        }
       }
-      speak += 'for ' + players + ' players.'
-      speak += '</speak>'
-      console.log('speak: ', JSON.stringify(speak));
-      
-      let responseToUser = {
-        speech: speak, // spoken response
-        text: 'Narrating a game of ' + game // displayed response
-      };
+
+      if (isGoogle) speak += '</speak>';
+
+      console.log('speak: ', speak);
+      let responseToUser = { fulfillmentText: speak };
       sendResponse(responseToUser);
     },
     // Default handler for unknown or undefined actions
@@ -203,15 +214,12 @@ function processV2Request (request, response) {
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
       if (requestSource === googleAssistantRequest) {
         let responseToUser = {
-          speech: 'This is the default Google response', // spoken response
+          speech: 'This is the default Google response',
           text: 'This is the default Google response' // displayed response
         };
         sendGoogleResponse(responseToUser);
       } else {
-        let responseToUser = {
-          speech: 'This is the default response', // spoken response
-          text: 'This is the default response' // displayed response
-        };
+        let responseToUser = { fulfillmentText: 'This is the default response' };
         sendResponse(responseToUser);
       }
     }
@@ -229,8 +237,8 @@ function processV2Request (request, response) {
     } else {
       // If speech or displayText is defined use it to respond
       let googleResponse = app.buildRichResponse().addSimpleResponse({
-        speech: responseToUser.speech || responseToUser.displayText,
-        displayText: responseToUser.displayText || responseToUser.speech
+        speech: responseToUser.speech || responseToUser.text,
+        displayText: responseToUser.text || responseToUser.speech
       });
       // Optional: Overwrite previous response with rich response
       if (responseToUser.googleRichResponse) {
@@ -241,7 +249,11 @@ function processV2Request (request, response) {
         app.setContext(...responseToUser.googleOutputContexts);
       }
       console.log('Response to Dialogflow (AoG): ' + JSON.stringify(googleResponse));
-      app.ask(googleResponse); // Send response to Dialogflow and Google Assistant
+      //app.ask(googleResponse); // Send response to Dialogflow and Google Assistant
+      app.ask({
+        speech: responseToUser.speech || responseToUser.text,
+        displayText: responseToUser.text || responseToUser.speech
+      });
     }
   }
   // Function to send correctly formatted responses to Dialogflow which are then sent to the user
@@ -316,17 +328,6 @@ const richResponsesV1 = {
     }
   }
 };
-const richResponseV2Card = {
-  'title': 'Title: this is a title',
-  'subtitle': 'This is an subtitle.  Text can include unicode characters including emoji 📱.',
-  'imageUri': 'https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png',
-  'buttons': [
-    {
-      'text': 'This is a button',
-      'postback': 'https://assistant.google.com/'
-    }
-  ]
-};
 const richResponsesV2 = [
   {
     'platform': 'ACTIONS_ON_GOOGLE',
@@ -338,32 +339,5 @@ const richResponsesV2 = [
         }
       ]
     }
-  },
-  {
-    'platform': 'ACTIONS_ON_GOOGLE',
-    'basic_card': {
-      'title': 'Title: this is a title',
-      'subtitle': 'This is an subtitle.',
-      'formatted_text': 'Body text can include unicode characters including emoji 📱.',
-      'image': {
-        'image_uri': 'https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png'
-      },
-      'buttons': [
-        {
-          'title': 'This is a button',
-          'open_uri_action': {
-            'uri': 'https://assistant.google.com/'
-          }
-        }
-      ]
-    }
-  },
-  {
-    'platform': 'FACEBOOK',
-    'card': richResponseV2Card
-  },
-  {
-    'platform': 'SLACK',
-    'card': richResponseV2Card
   }
 ];

@@ -2,3 +2,4 @@ firebase/functions/node_modules
 firebase/functions/package-lock.json
 firebase/firebase-debug.log
 firebase/firebase.json
+*.txt
