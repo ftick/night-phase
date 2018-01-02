@@ -1,0 +1,9 @@
+<speak>
+  <prosody volume="loud">Eyes closed and fists on the table!</prosody>
+  <break strength="weak"/>
+  <prosody volume="loud">Minions of Mordred, raise your thumbs, and open your eyes.</prosody>
+  <break strength="medium"/>
+  <prosody volume="loud">You should see two thumbs up including your own.</prosody>
+  <break strength="medium"/>
+  <prosody volume="loud">Now close your eyes.</prosody> <break strength="weak"/>
+</speak>
