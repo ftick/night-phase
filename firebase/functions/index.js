@@ -163,12 +163,15 @@ function processV2Request (request, response) {
       // Get game info
       let game_params = inputContexts[0].parameters;
       let game = game_params.game;
-      let players = game_params.players;
+      let player_count = game_params.players;
       let joker = game_params.joker !== '';
       let roles = game_params['avalon-set'];
       let isGoogle = requestSource === googleAssistantRequest;
       let speak = (isGoogle) ? '<speak>' : '';
 
+      function isSub(short, long){
+        return long.indexOf(short) != -1;
+      }
       function addBreak(length, strength){
         if(isGoogle) {
           speak += '<break ';
@@ -183,26 +186,79 @@ function processV2Request (request, response) {
       }
       function addPhrase(phrase, length, strength){
         addPhase(phrase)
-        if(isGoogle) addBreak(length, strength);
+        if (isGoogle) addBreak(length, strength);
       }
 
-      addPhrase('Eyes closed and fists on the table!', 200, 'x-weak')
+      addPhrase('Eyes closed and fists on the table!', 100, 'x-weak');
+      addPhrase('If there\'s a problem at any time, tell me to stop.', 1900, 'normal');
       
-      if(game == 'The Resistance: Avalon') {
-        //speak += 'Narrating Avalon for ' + players + ' players.';
-        
-      } else if (game == 'The Resistance') {
+      if (game == 'The Resistance') {
         //speak += 'Narrating The Resistance for ' + players + ' players.';
-        
+        let spy_count = player_count / 2;
+        addPhrase('Spies, open your eyes.', 200, 'x-weak');
+        addPhrase('You should see ' + spy_count + 'other pairs of eyes', 200, 'normal');
+        addPhrase('Collaborate with your buddies, and fail 3 missions to win.', 100, 'x-weak');
+        addPhrase('Spies, close your eyes.', 2000, 'strong');
       } else if (game == 'Secret Hitler') {
         //speak += 'Narrating Secret Hitler for ' + players + ' players.';
-        if(players > 6) {
-          if(isGoogle) speak += ''
+        if(player_count > 6) {
+          addPhrase('Fascists, open your eyes.', 200, 'x-weak');
+          addPhrase('Fascist, play Fascist cards and protect Hitler.', 100, 'weak');
+          addPhrase('Hitler, play safe and become Chancellor when the time is right.', 100, 'weak');
+          
+          addPhrase('Fascists, close your eyes.', 2000, 'strong');
         } else {
-
+          addPhrase('Fascists who are not Hitler, open your eyes.', 500, 'x-weak');
+          addPhrase('Your job is to play Fascist cards and protect Hitler.', 100, 'normal');
+          
+          addPhrase('Hitler, stick your thumb up so that your Fascists can see you.', 100, 'weak');
+          addPhrase('Stay hidden and become Chancellor when the time is right.', 100, 'weak');
+          
+          addPhrase('Fascists, close your eyes.', 100, 'normal');
+          addPhrase('Hitler, lower your thumb', 2000, 'strong');
         }
+      } else if (game == 'The Resistance: Avalon') {
+        //speak += 'Narrating Avalon for ' + players + ' players.';
+          let minion_count = 2;
+          if (player_count > 6) minion_count++;
+          if (player_count > 9) minion_count++;
+          
+          let hasPercival = isSub('Percival', roles);
+          let hasMorgana = isSub('Morgana', roles);
+          let hasOberon = isSub('Oberon', roles);
+          let hasMordred = isSub('Mordred', roles);
+          
+          let k_bads = minion_count;
+          if (hasOberon) k_bads--;
+          let v_bads = minion_count;
+          if (hasMordred) v_bads--;
+          
+          /// MINIONS
+          if (hasOberon) addPhrase('Minions who are not Oberon, raise your thumbs and open your eyes.', 1000, 'normal');
+          else addPhrase('Minions, raise your thumbs and open your eyes.', 1000, 'normal');
+          addPhrase('You should see ' + k_bads + 'thumbs up, including your own.', 4000, 'normal');
+          addPhrase('Minions, lower your thumbs and close your eyes.', 3000, 'strong');
+          
+          /// MERLIN
+          if (hasMordred) addPhrase('Minions who are not Mordred, raise your thumbs for Merlin.', 1000, 'normal');
+          else addPhrase('Minions, raise your thumbs for Merlin.', 1000, 'normal');
+          addPhrase('Merlin, open your eyes.', 500, 'weak');
+          addPhrase('You should see ' + v_bads + ' thumbs. Each of them can fail missions.', 3000, 'strong')
+          addPhrase('Merlin, close your eyes.', 1000, 'normal');
+          addPhrase('Minions, lower your thumbs', 3000, 'normal');
+          
+          /// PERCIVAL
+          if (hasPercival) {
+            if (hasMorgana) {
+              
+            } else {
+              
+            }
+            
+          }
       }
-
+      
+      addPhrase('Everyone, open your eyes.', 0, 'strong');
       if (isGoogle) speak += '</speak>';
 
       console.log('speak: ', speak);
