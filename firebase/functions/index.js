@@ -168,57 +168,96 @@ function processV2Request (request, response) {
       let roles = game_params['avalon-set'];
       let isGoogle = requestSource === googleAssistantRequest;
       let speak = (isGoogle) ? '<speak>' : '';
+      
+      let phrase = { length: 100, strength: 'weak' }
+      let fast_sentence = { length: 300, strength: 'normal' }
+      let long_sentence = { length: 2000, strength: 'normal' }
+      let paragraph = { length: 3000, strength: 'strong' }
+      
+      let PHRASE = 'phrase';
+      let FAST = 'fast';
+      let LONG = 'long';
+      let PARAGRAPH = 'paragraph';
 
       function isSub(short, long){
         return long.indexOf(short) != -1;
       }
-      function addBreak(length, strength){
-        if(isGoogle) {
-          speak += '<break ';
-          if(length > 0) speak += 'time="' + length + 'ms" ';
-          if(strength !== '') speak += 'strength="' + strength + '" ';
-          speak += '/>';
+      
+      function addBreak(info){
+        
+        if(!isGoogle) {}
+        
+        let length = '';
+        let strength = '';
+        
+        if (info == PHRASE) {
+          length = phrase.length;
+          strength = phrase.strength;
+        } else if (info == FAST) {
+          length = fast_sentence.length;
+          strength = fast_sentence.strength;
+        } else if (info == LONG) {
+          length = long_sentence.length;
+          strength = long_sentence.strength;
+        } else if (info == PARAGRAPH) {
+          length = paragraph.length;
+          strength = paragraph.strength;
         }
+        
+        speak += '<break ';
+        if(length > 0) speak += 'time="' + length + 'ms" ';
+        if(strength !== '') speak += 'strength="' + strength + '" ';
+        speak += '/>';
+          
+        if (info == PARAGRAPH) speak += '\n'
       }
-      function addPhrase(phrase) {
+      
+      function addPhraseImpl(phrase) {
         if(isGoogle) speak += '<prosody volume="loud">' + phrase + '</prosody>'
         else speak += phrase + ' '
       }
-      function addPhrase(phrase, length, strength){
-        addPhrase(phrase)
-        if (isGoogle) addBreak(length, strength);
+      
+      function addPhrase(phrase, info){ // too many arguments here
+        addPhraseImpl(phrase)
+        if (isGoogle) addBreak(info);
       }
 
-      addPhrase('Eyes closed and fists on the table!', 100, 'x-weak');
-      addPhrase('If there\'s a problem at any time, tell me to stop.', 1900, 'normal');
+      addPhrase('Eyes closed and fists on the table!', PHRASE);
+      addPhrase('If there\'s a problem at any time, tell me to stop.', PARAGRAPH);
       
       if (game == 'The Resistance') {
-        //speak += 'Narrating The Resistance for ' + players + ' players.';
+        
         let spy_count = player_count / 2;
-        addPhrase('Spies, open your eyes.', 200, 'x-weak');
-        addPhrase('You should see ' + spy_count + 'other pairs of eyes', 200, 'normal');
-        addPhrase('Collaborate with your buddies, and fail 3 missions to win.', 100, 'x-weak');
-        addPhrase('Spies, close your eyes.', 2000, 'strong');
+        
+        addPhrase('Spies, open your eyes.', PHRASE);
+        addPhrase('You should see ' + spy_count + 'other pairs of eyes', FAST);
+        addPhrase('Collaborate with your buddies, and fail 3 missions to win.', PHRASE);
+        addPhrase('Spies, close your eyes.', PARAGRAPH);
+        
       } else if (game == 'Secret Hitler') {
-        //speak += 'Narrating Secret Hitler for ' + players + ' players.';
+        
         if(player_count > 6) {
-          addPhrase('Fascists, open your eyes.', 200, 'x-weak');
-          addPhrase('Fascist, play Fascist cards and protect Hitler.', 100, 'weak');
-          addPhrase('Hitler, play safe and become Chancellor when the time is right.', 100, 'weak');
           
-          addPhrase('Fascists, close your eyes.', 2000, 'strong');
+          addPhrase('Fascists, open your eyes.', FAST);
+          addPhrase('Fascist, play Fascist cards and protect Hitler.', PHRASE);
+          addPhrase('Hitler, play safe and become Chancellor when the time is right.', PHRASE);
+          
+          addPhrase('Fascists, close your eyes.', PARAGRAPH);
+          
         } else {
-          addPhrase('Fascists who are not Hitler, open your eyes.', 500, 'x-weak');
-          addPhrase('Your job is to play Fascist cards and protect Hitler.', 100, 'normal');
           
-          addPhrase('Hitler, stick your thumb up so that your Fascists can see you.', 100, 'weak');
-          addPhrase('Stay hidden and become Chancellor when the time is right.', 100, 'weak');
+          addPhrase('Fascists who are not Hitler, open your eyes.', FAST);
+          addPhrase('Your job is to play Fascist cards and protect Hitler.', LONG);
           
-          addPhrase('Fascists, close your eyes.', 100, 'normal');
-          addPhrase('Hitler, lower your thumb.', 2000, 'strong');
+          addPhrase('Hitler, stick your thumb up so that your Fascists can see you.', PHRASE);
+          addPhrase('Stay hidden and become Chancellor when the time is right.', PHRASE);
+          
+          addPhrase('Fascists, close your eyes.', FAST);
+          addPhrase('Hitler, lower your thumb.', LONG);
         }
+        
       } else if (game == 'The Resistance: Avalon') {
-        //speak += 'Narrating Avalon for ' + players + ' players.';
+        
         let minion_count = 2;
         if (player_count > 6) minion_count++;
         if (player_count > 9) minion_count++;
@@ -235,42 +274,48 @@ function processV2Request (request, response) {
           
         /// MINIONS
         
-        if (hasOberon) addPhrase('Minions who are not Oberon, raise your thumbs and open your eyes.', 1000, 'normal');
-        else addPhrase('Minions, raise your thumbs and open your eyes.', 1000, 'normal');
+        if (hasOberon) addPhrase('Minions who are not Oberon, raise your thumbs and open your eyes.', FAST);
+        else addPhrase('Minions, raise your thumbs and open your eyes.', FAST);
       
-        addPhrase('You should see ' + k_bads + 'thumbs up, including your own.', 4000, 'normal');
-        addPhrase('Minions, lower your thumbs and close your eyes.', 3000, 'strong');
+        addPhrase('You should see ' + k_bads + ' thumbs up, including your own.', LONG);
+        addPhrase('Minions, lower your thumbs and close your eyes.', PARAGRAPH);
         
         /// MERLIN
       
-        if (hasMordred) addPhrase('Minions who are not Mordred, raise your thumbs for Merlin.', 1000, 'normal');
-        else addPhrase('Minions, raise your thumbs for Merlin.', 1000, 'normal');
+        if (hasMordred) addPhrase('Minions who are not Mordred, raise your thumbs for Merlin.', PHRASE);
+        else addPhrase('Minions, raise your thumbs for Merlin.', FAST);
       
-        addPhrase('Merlin, open your eyes.', 500, 'weak');
-        addPhrase('You should see ' + v_bads + ' thumbs. Each of them can fail missions.', 3000, 'strong')
-        addPhrase('Merlin, close your eyes.', 1000, 'normal');
-        addPhrase('Minions, lower your thumbs', 3000, 'normal');
+        addPhrase('Merlin, open your eyes.', PHRASE);
+        addPhrase('You should see ' + v_bads + ' thumbs. Each of them can fail missions.', PARAGRAPH);
+        
+        addPhrase('Merlin, close your eyes.', FAST);
+        addPhrase('Minions, lower your thumbs', LONG);
         
         /// PERCIVAL
       
         if (hasPercival) {
+          
           if (hasMorgana) {
-            addPhrase('Merlin and Morgana, raise your thumbs.', 3000, 'normal');
-            addPhrase('Percival, open your eyes.', 200, 'normal');
-            addPhrase('You should see 2 thumbs.', 200, 'normal');
-            addPhrase('One is Merlin, one is Morgana.', 200, 'weak');
-            addPhrase('Figure out who\'s who.', 1500, 'normal');
+            
+            addPhrase('Merlin and Morgana, raise your thumbs.', LONG);
+            addPhrase('Percival, open your eyes.', FAST);
+            addPhrase('You should see 2 thumbs.', FAST);
+            addPhrase('One is Merlin, one is Morgana.', PHRASE);
+            addPhrase('Figure out who\'s who.', PARAGRAPH);
+            
           } else {
-            addPhrase('Merlin, raise your thumb.', 3000, 'normal');
-            addPhrase('Percival, open your eyes.', 200, 'normal');
-            addPhrase('You should see 1 thumb.', 200, 'normal');
-            addPhrase('This is Merlin, one is Morgana.', 2000, 'normal');
+            
+            addPhrase('Merlin, raise your thumb.', LONG);
+            addPhrase('Percival, open your eyes.', FAST);
+            addPhrase('You should see 1 thumb.', FAST);
+            addPhrase('This is Merlin, one is Morgana.', PHRASE);
           }
-          addPhrase('Lower your thumbs and close your eyes.', 3000, 'strong');
+          
+          addPhrase('Lower your thumbs and close your eyes.', PARAGRAPH);
         }
       }
       
-      addPhrase('Everyone, open your eyes.', 0, 'strong');
+      addPhrase('Everyone, open your eyes.', PARAGRAPH);
       if (isGoogle) speak += '</speak>';
 
       console.log('speak: ', speak);
