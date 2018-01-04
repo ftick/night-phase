@@ -185,7 +185,7 @@ function processV2Request (request, response) {
         else speak += phrase + ' '
       }
       function addPhrase(phrase, length, strength){
-        addPhase(phrase)
+        addPhrase(phrase)
         if (isGoogle) addBreak(length, strength);
       }
 
