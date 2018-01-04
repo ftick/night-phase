@@ -3,6 +3,8 @@
 ## Setting up the Firebase Cloud Function on Windows
 1. Clone the repo `git clone https://github.com/ftick/night-phase.git`
 2. Open `firebase\functions` folder in Command Prompt
+- Chromebook: `cd ~/Downloads/Code/Github/night-phase/firebase/functions`
+- Windows: `cd C:/Documents/Github/night-phase/firebase/functions`
 3. Install Firebase (`npm install -g firebase-tools`) and login (`firebase login`)
 4. Install dependencies (`npm install`)
 5. Run `firebase --project night-phase deploy --only functions:dialogflowFirebaseFulfillment`
