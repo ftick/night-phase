@@ -1,0 +1,6 @@
+Tell Night Phase to narrate 6 player fab 4 avalon
+Tell Night Phase to narrate 7 player avalon
+Tell Night Phase to narrate 10 player avalon with all specials
+Tell Night Phase to narrate 9 player Secret Hitler
+Tell Night Phase to narrate 8 player Secret Hitler with Joker
+Tell Night Phase to narrate 5 player Resistance 
