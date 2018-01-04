@@ -215,47 +215,59 @@ function processV2Request (request, response) {
           addPhrase('Stay hidden and become Chancellor when the time is right.', 100, 'weak');
           
           addPhrase('Fascists, close your eyes.', 100, 'normal');
-          addPhrase('Hitler, lower your thumb', 2000, 'strong');
+          addPhrase('Hitler, lower your thumb.', 2000, 'strong');
         }
       } else if (game == 'The Resistance: Avalon') {
         //speak += 'Narrating Avalon for ' + players + ' players.';
-          let minion_count = 2;
-          if (player_count > 6) minion_count++;
-          if (player_count > 9) minion_count++;
+        let minion_count = 2;
+        if (player_count > 6) minion_count++;
+        if (player_count > 9) minion_count++;
+        
+        let hasPercival = isSub('Percival', roles);
+        let hasMorgana = isSub('Morgana', roles);
+        let hasOberon = isSub('Oberon', roles);
+        let hasMordred = isSub('Mordred', roles);
+        
+        let k_bads = minion_count;
+        if (hasOberon) k_bads--;
+        let v_bads = minion_count;
+        if (hasMordred) v_bads--;
           
-          let hasPercival = isSub('Percival', roles);
-          let hasMorgana = isSub('Morgana', roles);
-          let hasOberon = isSub('Oberon', roles);
-          let hasMordred = isSub('Mordred', roles);
-          
-          let k_bads = minion_count;
-          if (hasOberon) k_bads--;
-          let v_bads = minion_count;
-          if (hasMordred) v_bads--;
-          
-          /// MINIONS
-          if (hasOberon) addPhrase('Minions who are not Oberon, raise your thumbs and open your eyes.', 1000, 'normal');
-          else addPhrase('Minions, raise your thumbs and open your eyes.', 1000, 'normal');
-          addPhrase('You should see ' + k_bads + 'thumbs up, including your own.', 4000, 'normal');
-          addPhrase('Minions, lower your thumbs and close your eyes.', 3000, 'strong');
-          
-          /// MERLIN
-          if (hasMordred) addPhrase('Minions who are not Mordred, raise your thumbs for Merlin.', 1000, 'normal');
-          else addPhrase('Minions, raise your thumbs for Merlin.', 1000, 'normal');
-          addPhrase('Merlin, open your eyes.', 500, 'weak');
-          addPhrase('You should see ' + v_bads + ' thumbs. Each of them can fail missions.', 3000, 'strong')
-          addPhrase('Merlin, close your eyes.', 1000, 'normal');
-          addPhrase('Minions, lower your thumbs', 3000, 'normal');
-          
-          /// PERCIVAL
-          if (hasPercival) {
-            if (hasMorgana) {
-              
-            } else {
-              
-            }
-            
+        /// MINIONS
+        
+        if (hasOberon) addPhrase('Minions who are not Oberon, raise your thumbs and open your eyes.', 1000, 'normal');
+        else addPhrase('Minions, raise your thumbs and open your eyes.', 1000, 'normal');
+      
+        addPhrase('You should see ' + k_bads + 'thumbs up, including your own.', 4000, 'normal');
+        addPhrase('Minions, lower your thumbs and close your eyes.', 3000, 'strong');
+        
+        /// MERLIN
+      
+        if (hasMordred) addPhrase('Minions who are not Mordred, raise your thumbs for Merlin.', 1000, 'normal');
+        else addPhrase('Minions, raise your thumbs for Merlin.', 1000, 'normal');
+      
+        addPhrase('Merlin, open your eyes.', 500, 'weak');
+        addPhrase('You should see ' + v_bads + ' thumbs. Each of them can fail missions.', 3000, 'strong')
+        addPhrase('Merlin, close your eyes.', 1000, 'normal');
+        addPhrase('Minions, lower your thumbs', 3000, 'normal');
+        
+        /// PERCIVAL
+      
+        if (hasPercival) {
+          if (hasMorgana) {
+            addPhrase('Merlin and Morgana, raise your thumbs.', 3000, 'normal');
+            addPhrase('Percival, open your eyes.', 200, 'normal');
+            addPhrase('You should see 2 thumbs.', 200, 'normal');
+            addPhrase('One is Merlin, one is Morgana.', 200, 'weak');
+            addPhrase('Figure out who\'s who.', 1500, 'normal');
+          } else {
+            addPhrase('Merlin, raise your thumb.', 3000, 'normal');
+            addPhrase('Percival, open your eyes.', 200, 'normal');
+            addPhrase('You should see 1 thumb.', 200, 'normal');
+            addPhrase('This is Merlin, one is Morgana.', 2000, 'normal');
           }
+          addPhrase('Lower your thumbs and close your eyes.', 3000, 'strong');
+        }
       }
       
       addPhrase('Everyone, open your eyes.', 0, 'strong');
