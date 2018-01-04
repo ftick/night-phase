@@ -1,0 +1,13 @@
+<speak>
+  
+  
+  
+  Spies, open your eyes.
+  You should see <spies-1> other pairs of eyes.
+  Collaborate with your buddies, and fail 3 missions to win.',
+  
+  Spies close your eyes.
+  
+  Everyone open your eyes.
+
+</speak>
