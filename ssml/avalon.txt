@@ -1,9 +1,39 @@
 <speak>
-  <prosody volume="loud">Eyes closed and fists on the table!</prosody>
-  <break strength="weak"/>
-  <prosody volume="loud">Minions of Mordred, raise your thumbs, and open your eyes.</prosody>
-  <break strength="medium"/>
-  <prosody volume="loud">You should see two thumbs up including your own.</prosody>
-  <break strength="medium"/>
-  <prosody volume="loud">Now close your eyes.</prosody> <break strength="weak"/>
+  
+  k-bad
+    assassin, morgana, VT, mordred
+  v-bad
+    assassin, morgana, VT, oberon
+  
+  Minions who are not Oberon, raise your thumbs and open your eyes.
+  You should see <k-bad> thumbs up, including your own.
+  Minions, lower your thumbs and close your eyes.
+  
+  Minions who are not Mordred, raise your thumbs for Merlin.
+  Merlin, open your eyes.
+  You should see <v-minions> thumbs. Each of them can fail missions.
+  Merlin, close your eyes.
+  Minions, lower your thumbs.
+  
+  if(PERCIvAL)
+  
+    if(MORGANA)
+  
+      Merlin and Morgana, raise your thumbs.
+      Percival, open your eyes.
+      You should see 2 thumbs.
+      One is Merlin, one is Morgana.
+      Figure out who's who.
+  
+    else
+  
+      Merlin, raise your thumb.
+      Percival, open your eyes.
+      You should see 1 thumb.
+      This is Merlin.
+  
+    Lower your thumbs and close your eyes.
+  
+  Everyone open your eyes.
+  
 </speak>
