@@ -107,10 +107,12 @@ function processV2Request (request, response) {
       
       if (game == 'The Resistance') {
         
-        let spy_count = Math.floor(player_count / 2);
+        let spy_count = 2;
+        if(player_count > 6) spy_count++;
+        if(player_count > 8) spy_count++;
         
         addPhrase('Spies, open your eyes.', PHRASE);
-        addPhrase('You should see ' + spy_count + 'other pairs of eyes', FAST);
+        addPhrase('You should see ' + (spy_count-1).toString() + ' other pairs of eyes', FAST);
         addPhrase('Collaborate with your buddies, and fail 3 missions to win.', PHRASE);
         addPhrase('Spies, close your eyes.', PARAGRAPH);
       
@@ -120,7 +122,9 @@ function processV2Request (request, response) {
       
       } else if (game == 'Secret Hitler') {
         
-        let spy_count = Math.floor(player_count / 2);
+        let spy_count = 2;
+        if(player_count > 6) spy_count++;
+        if(player_count > 8) spy_count++;
         
         if(spy_count < 3) {
           
@@ -136,7 +140,7 @@ function processV2Request (request, response) {
         } else {
           
           addPhrase('Fascists who are not Hitler, open your eyes.', FAST);
-          addPhrase('You should see ' + spy_count-1 + ' other pairs of eyes.', FAST);
+          addPhrase('You should see ' + (spy_count-1).toString() + ' other pairs of eyes.', FAST);
           addPhrase('Your job is to play Fascist cards and protect Hitler.', LONG);
           
           addPhrase('Hitler, stick your thumb up so that your Fascists can see you.', LONG);
