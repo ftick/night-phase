@@ -120,9 +120,14 @@ function processV2Request (request, response) {
       
       } else if (game == 'Secret Hitler') {
         
-        if(player_count > 6) {
+        let spy_count = Math.floor(player_count / 2);
+        
+        if(spy_count < 3) {
           
           addPhrase('Fascists, open your eyes.', FAST);
+          
+          addPhrase('You should see one other pair of eyes.', FAST);
+          
           addPhrase('Fascist, play Fascist cards and protect Hitler.', PHRASE);
           addPhrase('Hitler, play safe and become Chancellor when the time is right.', PHRASE);
           
@@ -131,9 +136,10 @@ function processV2Request (request, response) {
         } else {
           
           addPhrase('Fascists who are not Hitler, open your eyes.', FAST);
+          addPhrase('You should see ' + spy_count-1 + ' other pairs of eyes.', FAST);
           addPhrase('Your job is to play Fascist cards and protect Hitler.', LONG);
           
-          addPhrase('Hitler, stick your thumb up so that your Fascists can see you.', PHRASE);
+          addPhrase('Hitler, stick your thumb up so that your Fascists can see you.', LONG);
           addPhrase('Stay hidden and become Chancellor when the time is right.', PHRASE);
           
           addPhrase('Fascists, close your eyes.', FAST);
